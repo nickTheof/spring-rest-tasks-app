@@ -39,7 +39,7 @@ public class User extends AbstractEntity implements UserDetails {
     private Role role;
 
     @Getter(AccessLevel.PROTECTED)
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Task> tasks = new HashSet<>();
 
     @Override
