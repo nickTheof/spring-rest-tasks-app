@@ -3,6 +3,7 @@ package gr.aueb.cf.springtaskrest.core.filters;
 import gr.aueb.cf.springtaskrest.core.enums.TaskStatus;
 import lombok.*;
 import org.springframework.lang.Nullable;
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,7 +18,12 @@ public class TaskFilters extends GenericFilters {
     @Nullable
     private String title;
 
-    //TODO: List<TaskStatus> for accepting multiple status in filtering
     @Nullable
-    private TaskStatus status;
+    private List<TaskStatus> status;
+
+    @Nullable
+    private Boolean userIsActive;
+
+    @Nullable
+    private String userUuid;
 }
