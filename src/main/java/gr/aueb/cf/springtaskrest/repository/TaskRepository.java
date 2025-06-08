@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificationExecutor<Task> {
     Optional<Task> findByUuid(String uuid);
     Page<Task> findByUserUuid(String uuid, Pageable pageable);
+    Optional<Task> findByTitleAndUserUuid(String title, String userUuid);
 }
