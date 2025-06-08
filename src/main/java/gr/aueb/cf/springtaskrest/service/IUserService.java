@@ -8,11 +8,9 @@ import gr.aueb.cf.springtaskrest.dto.Paginated;
 import gr.aueb.cf.springtaskrest.dto.UserInsertDTO;
 import gr.aueb.cf.springtaskrest.dto.UserReadOnlyDTO;
 import gr.aueb.cf.springtaskrest.dto.UserUpdateDTO;
-import gr.aueb.cf.springtaskrest.model.User;
 import org.springframework.data.domain.Page;
-
 import java.util.List;
-import java.util.Optional;
+
 
 public interface IUserService {
     UserReadOnlyDTO findByUsername(String username) throws AppObjectNotFoundException;
