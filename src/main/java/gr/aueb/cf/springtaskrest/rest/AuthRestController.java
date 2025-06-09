@@ -6,6 +6,11 @@ import gr.aueb.cf.springtaskrest.core.exceptions.AppObjectNotAuthorizedException
 import gr.aueb.cf.springtaskrest.core.exceptions.ValidationException;
 import gr.aueb.cf.springtaskrest.dto.*;
 import gr.aueb.cf.springtaskrest.service.IUserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -21,11 +26,32 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Tag(name = "Authentication", description = "Endpoints for user registration and authentication")
 public class AuthRestController {
     private final IUserService userService;
     private final AuthenticationService authenticationService;
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthRestController.class);
 
+    @Operation(
+            summary = "Register a new user with role USER",
+            description = "Creates a new user account. Returns the created user.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = UserRegisterDTO.class)
+                    )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "User created",
+                            content = @Content(
+                                    schema = @Schema(implementation = UserReadOnlyDTO.class)
+                            )
+                    )
+            },
+            security = {}
+    )
     @PostMapping("/register")
     public ResponseEntity<UserReadOnlyDTO> register(
             @Valid @RequestBody UserRegisterDTO dto,
@@ -42,6 +68,26 @@ public class AuthRestController {
         }
     }
 
+    @Operation(
+            summary = "Authenticate a user",
+            description = "Authenticate user and return authentication response (e.g., JWT).",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = AuthenticationRequestDTO.class)
+                    )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "User authenticated",
+                            content = @Content(
+                                    schema = @Schema(implementation = AuthenticationResponseDTO.class)
+                            )
+                    )
+            },
+            security = {}
+    )
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponseDTO> login(
             @RequestBody AuthenticationRequestDTO authenticationRequestDTO
