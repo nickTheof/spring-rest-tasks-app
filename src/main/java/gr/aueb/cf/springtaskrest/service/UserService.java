@@ -5,10 +5,7 @@ import gr.aueb.cf.springtaskrest.core.exceptions.AppObjectAlreadyExistsException
 import gr.aueb.cf.springtaskrest.core.exceptions.AppObjectNotFoundException;
 import gr.aueb.cf.springtaskrest.core.filters.UserFilters;
 import gr.aueb.cf.springtaskrest.core.specifications.UserSpecification;
-import gr.aueb.cf.springtaskrest.dto.Paginated;
-import gr.aueb.cf.springtaskrest.dto.UserInsertDTO;
-import gr.aueb.cf.springtaskrest.dto.UserReadOnlyDTO;
-import gr.aueb.cf.springtaskrest.dto.UserUpdateDTO;
+import gr.aueb.cf.springtaskrest.dto.*;
 import gr.aueb.cf.springtaskrest.mapper.Mapper;
 import gr.aueb.cf.springtaskrest.model.User;
 import gr.aueb.cf.springtaskrest.repository.UserRepository;
@@ -65,6 +62,16 @@ public class UserService implements IUserService {
         User savedUser = userRepository.save(user);
         return mapper.mapToUserReadOnly(savedUser);
     }
+
+    @Transactional(rollbackFor = {AppObjectAlreadyExistsException.class})
+    @Override
+    public UserReadOnlyDTO registerUser(UserRegisterDTO dto) throws AppObjectAlreadyExistsException {
+        if (userRepository.findByUsername(dto.username()).isPresent()) throw new AppObjectAlreadyExistsException("User", "User with username " + dto.username() + " already exists");
+        User user = mapper.mapToUser(dto);
+        User savedUser = userRepository.save(user);
+        return mapper.mapToUserReadOnly(savedUser);
+    }
+
 
     @Transactional(rollbackFor = {AppObjectAlreadyExistsException.class, AppObjectNotFoundException.class})
     @Override

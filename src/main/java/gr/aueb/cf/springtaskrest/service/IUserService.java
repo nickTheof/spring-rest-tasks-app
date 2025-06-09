@@ -4,10 +4,7 @@ import gr.aueb.cf.springtaskrest.core.enums.Role;
 import gr.aueb.cf.springtaskrest.core.exceptions.AppObjectAlreadyExistsException;
 import gr.aueb.cf.springtaskrest.core.exceptions.AppObjectNotFoundException;
 import gr.aueb.cf.springtaskrest.core.filters.UserFilters;
-import gr.aueb.cf.springtaskrest.dto.Paginated;
-import gr.aueb.cf.springtaskrest.dto.UserInsertDTO;
-import gr.aueb.cf.springtaskrest.dto.UserReadOnlyDTO;
-import gr.aueb.cf.springtaskrest.dto.UserUpdateDTO;
+import gr.aueb.cf.springtaskrest.dto.*;
 import org.springframework.data.domain.Page;
 import java.util.List;
 
@@ -19,6 +16,7 @@ public interface IUserService {
     Page<UserReadOnlyDTO> getUsersPaginated(int page, int pageSize);
     List<UserReadOnlyDTO> getUsersFiltered(UserFilters filters);
     UserReadOnlyDTO saveUser(UserInsertDTO dto) throws AppObjectAlreadyExistsException;
+    UserReadOnlyDTO registerUser(UserRegisterDTO dto) throws AppObjectAlreadyExistsException;
     UserReadOnlyDTO updateUser(String uuid, UserUpdateDTO dto) throws AppObjectNotFoundException, AppObjectAlreadyExistsException;
     UserReadOnlyDTO reverseUserStatusActivity(String uuid) throws AppObjectNotFoundException;
     UserReadOnlyDTO updateUserRole(String uuid, Role role) throws AppObjectNotFoundException;
