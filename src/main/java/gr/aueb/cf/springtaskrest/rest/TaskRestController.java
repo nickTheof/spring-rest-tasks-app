@@ -4,11 +4,14 @@ import gr.aueb.cf.springtaskrest.core.exceptions.AppObjectAlreadyExistsException
 import gr.aueb.cf.springtaskrest.core.exceptions.AppObjectNotFoundException;
 import gr.aueb.cf.springtaskrest.core.exceptions.ValidationException;
 import gr.aueb.cf.springtaskrest.core.filters.TaskFilters;
-import gr.aueb.cf.springtaskrest.dto.Paginated;
-import gr.aueb.cf.springtaskrest.dto.TaskInsertDTO;
-import gr.aueb.cf.springtaskrest.dto.TaskReadOnlyDTO;
-import gr.aueb.cf.springtaskrest.dto.TaskUpdateDTO;
+import gr.aueb.cf.springtaskrest.dto.*;
 import gr.aueb.cf.springtaskrest.service.TaskService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -22,10 +25,22 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
+@Tags({
+        @Tag(name = "Admin"),
+        @Tag(name = "Tasks")
+})
 public class TaskRestController {
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskRestController.class);
     private final TaskService taskService;
 
+    @Operation(
+            summary = "Get all tasks (paginated)",
+            description = "Returns a paginated list of all tasks. Only accessible by admin.",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "Successful retrieval of tasks")
+            }
+    )
     @GetMapping("/tasks")
     public ResponseEntity<Paginated<TaskReadOnlyDTO>> getAllTasksPaginated(
             @RequestParam(defaultValue = "0") int page,
@@ -38,12 +53,26 @@ public class TaskRestController {
         return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Delete all tasks",
+            description = "Deletes all tasks in the system. Only accessible by admin.",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "All tasks deleted successfully"),
+            }
+    )
     @DeleteMapping("/tasks")
     public ResponseEntity<Void> deleteAllTasks() {
         taskService.deleteAllTasks();
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(
+            summary = "Get filtered tasks (paginated)",
+            description = "Returns a paginated list of tasks filtered by criteria in the request body. Only accessible by admin.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Filtered tasks retrieved"),
+            }
+    )
     @PostMapping("/tasks/filtered")
     public ResponseEntity<Paginated<TaskReadOnlyDTO>> getFilteredTasksPaginated(
             @Nullable @RequestBody TaskFilters filters
@@ -53,6 +82,13 @@ public class TaskRestController {
         return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Get task by UUID",
+            description = "Retrieve a specific task by its unique identifier. Only accessible by admin.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Task found"),
+            }
+    )
     @GetMapping("/tasks/{uuid}")
     public ResponseEntity<TaskReadOnlyDTO> getTaskByUuid(
         @PathVariable("uuid") String uuid
@@ -67,6 +103,13 @@ public class TaskRestController {
     }
 
 
+    @Operation(
+            summary = "Delete task by UUID",
+            description = "Deletes a specific task identified by UUID. Only accessible by admin.",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Task deleted"),
+            }
+    )
     @DeleteMapping("/tasks/{uuid}")
     public ResponseEntity<Void> deleteTaskByUuid(
             @PathVariable("uuid") String uuid
@@ -80,6 +123,14 @@ public class TaskRestController {
         }
     }
 
+
+    @Operation(
+            summary = "Get all tasks for a user (paginated)",
+            description = "Returns a paginated list of all tasks assigned to the specified user. Only accessible by admin.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "User's tasks retrieved"),
+            }
+    )
     @GetMapping("/users/{userUuid}/tasks")
     public ResponseEntity<Paginated<TaskReadOnlyDTO>> getAllUserTasksPaginated(
             @PathVariable("userUuid") String userUuid,
@@ -92,6 +143,14 @@ public class TaskRestController {
         return new ResponseEntity<>(taskService.getFilteredPaginatedTasks(filters), HttpStatus.OK);
     }
 
+
+    @Operation(
+            summary = "Create a new task for a user",
+            description = "Creates a new task assigned to the specified user. Only accessible by admin.",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Task created"),
+            }
+    )
     @PostMapping("/users/{userUuid}/tasks")
     public ResponseEntity<TaskReadOnlyDTO> createTask(
             @PathVariable String userUuid,
@@ -110,6 +169,13 @@ public class TaskRestController {
         }
     }
 
+    @Operation(
+            summary = "Get user's task by UUID",
+            description = "Retrieve a specific task assigned to a user by its UUID. Only accessible by admin.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Task found"),
+            }
+    )
     @GetMapping("/users/{userUuid}/tasks/{taskUuid}")
     public ResponseEntity<TaskReadOnlyDTO> getUserTaskByUuid(
             @PathVariable("userUuid") String userUuid,
@@ -125,6 +191,13 @@ public class TaskRestController {
         }
     }
 
+    @Operation(
+            summary = "Update user's task by UUID",
+            description = "Updates a specific task assigned to a user. Only accessible by admin.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Task updated"),
+            }
+    )
     @PatchMapping("/users/{userUuid}/tasks/{taskUuid}")
     public ResponseEntity<TaskReadOnlyDTO> updateTask(
             @PathVariable("userUuid") String userUuid,
@@ -145,6 +218,13 @@ public class TaskRestController {
         }
     }
 
+    @Operation(
+            summary = "Delete user's task by UUID",
+            description = "Deletes a specific task assigned to a user. Only accessible by admin.",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Task deleted"),
+            }
+    )
     @DeleteMapping("/users/{userUuid}/tasks/{taskUuid}")
     public ResponseEntity<Void> deleteUserTaskByUuid(
             @PathVariable("userUuid") String userUuid,
