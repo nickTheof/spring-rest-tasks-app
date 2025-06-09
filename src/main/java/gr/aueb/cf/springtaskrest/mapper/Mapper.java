@@ -1,6 +1,7 @@
 package gr.aueb.cf.springtaskrest.mapper;
 
 import gr.aueb.cf.springtaskrest.core.enums.Role;
+import gr.aueb.cf.springtaskrest.core.enums.TaskStatus;
 import gr.aueb.cf.springtaskrest.dto.*;
 import gr.aueb.cf.springtaskrest.model.Task;
 import gr.aueb.cf.springtaskrest.model.User;
@@ -55,14 +56,20 @@ public class Mapper {
         Task task = new Task();
         task.setTitle(dto.title());
         task.setDescription(dto.description());
-        task.setStatus(dto.status());
+        task.setStatus(TaskStatus.valueOf(dto.status()));
         return task;
     }
 
     public Task mapToTask(TaskUpdateDTO dto, Task task) {
-        task.setTitle(dto.title());
-        task.setDescription(dto.description());
-        task.setStatus(dto.status());
+        if (dto.title() != null) {
+            task.setTitle(dto.title());
+        }
+        if (dto.description() != null) {
+            task.setDescription(dto.description());
+        }
+        if (dto.status() != null) {
+            task.setStatus(TaskStatus.valueOf(dto.status()));
+        }
         return task;
     }
 

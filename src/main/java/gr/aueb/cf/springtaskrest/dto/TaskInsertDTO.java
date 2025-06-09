@@ -3,6 +3,7 @@ package gr.aueb.cf.springtaskrest.dto;
 import gr.aueb.cf.springtaskrest.core.enums.TaskStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record TaskInsertDTO(
@@ -15,9 +16,10 @@ public record TaskInsertDTO(
         String description,
 
         @NotNull(message = "Status cannot be null")
-        TaskStatus status
+        @Pattern(regexp = "^(OPEN|ONGOING|COMPLETED|FAILED|CANCELLED)$")
+        String status
 ) {
     public TaskInsertDTO(String title, String description) {
-        this(title, description, TaskStatus.OPEN);
+        this(title, description, TaskStatus.OPEN.name());
     }
 }
