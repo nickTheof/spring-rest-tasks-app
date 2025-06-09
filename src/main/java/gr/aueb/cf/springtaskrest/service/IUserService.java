@@ -18,10 +18,7 @@ public interface IUserService {
     UserReadOnlyDTO saveUser(UserInsertDTO dto) throws AppObjectAlreadyExistsException;
     UserReadOnlyDTO registerUser(UserRegisterDTO dto) throws AppObjectAlreadyExistsException;
     UserReadOnlyDTO updateUser(String uuid, UserUpdateDTO dto) throws AppObjectNotFoundException, AppObjectAlreadyExistsException;
-    UserReadOnlyDTO updateUserByUsername(String username, UserUpdateDTO dto) throws AppObjectNotFoundException, AppObjectAlreadyExistsException;
-    UserReadOnlyDTO reverseUserStatusActivity(String uuid) throws AppObjectNotFoundException;
-    void reverseUserStatusActivityByUsername(String username) throws AppObjectNotFoundException;
-    UserReadOnlyDTO updateUserRole(String uuid, Role role) throws AppObjectNotFoundException;
+    void reverseUserStatusActivity(String uuid) throws AppObjectNotFoundException;
     void deleteUser(String uuid) throws AppObjectNotFoundException;
     void deleteAllUsers();
 }

@@ -86,44 +86,14 @@ public class UserService implements IUserService {
         return mapper.mapToUserReadOnly(updatedUser);
     }
 
-    @Transactional(rollbackFor = {AppObjectAlreadyExistsException.class, AppObjectNotFoundException.class})
-    @Override
-    public UserReadOnlyDTO updateUserByUsername(String username, UserUpdateDTO dto) throws AppObjectNotFoundException, AppObjectAlreadyExistsException {
-        User fetchedUser = userRepository.findByUsername(username).orElseThrow(() -> new AppObjectNotFoundException("User", "User with username " + username + " not found"));
-        Optional<User> optionalUser = userRepository.findByUsername(dto.username());
-        if (optionalUser.isPresent() && !optionalUser.get().getUuid().equals(fetchedUser.getUuid())) {
-            throw new AppObjectAlreadyExistsException("User", "User with username " + dto.username() + " already exists");
-        }
-        User toUpdate = mapper.mapToUser(dto, fetchedUser);
-        User updatedUser = userRepository.save(toUpdate);
-        return mapper.mapToUserReadOnly(updatedUser);
-    }
-
     @Transactional(rollbackFor = {AppObjectNotFoundException.class})
     @Override
-    public UserReadOnlyDTO reverseUserStatusActivity(String uuid) throws AppObjectNotFoundException {
+    public void reverseUserStatusActivity(String uuid) throws AppObjectNotFoundException {
         User user = userRepository.findByUuid(uuid).orElseThrow(() -> new AppObjectNotFoundException("User", "User with username " + uuid + " not found"));
-        user.setIsActive(!user.getIsActive());
-        User updatedUser = userRepository.save(user);
-        return mapper.mapToUserReadOnly(updatedUser);
-    }
-
-    @Transactional(rollbackFor = {AppObjectNotFoundException.class})
-    @Override
-    public void reverseUserStatusActivityByUsername(String username) throws AppObjectNotFoundException {
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppObjectNotFoundException("User", "User with username " + username + " not found"));
         user.setIsActive(!user.getIsActive());
         userRepository.save(user);
     }
 
-    @Transactional(rollbackFor = {AppObjectNotFoundException.class})
-    @Override
-    public UserReadOnlyDTO updateUserRole(String uuid, Role role) throws AppObjectNotFoundException {
-        User user = userRepository.findByUuid(uuid).orElseThrow(() -> new AppObjectNotFoundException("User", "User with username " + uuid + " not found"));
-        user.setRole(role);
-        User updatedUser = userRepository.save(user);
-        return mapper.mapToUserReadOnly(updatedUser);
-    }
 
     @Transactional(rollbackFor = {AppObjectNotFoundException.class})
     @Override

@@ -8,6 +8,7 @@ import gr.aueb.cf.springtaskrest.dto.Paginated;
 import gr.aueb.cf.springtaskrest.dto.UserInsertDTO;
 import gr.aueb.cf.springtaskrest.dto.UserReadOnlyDTO;
 import gr.aueb.cf.springtaskrest.dto.UserUpdateDTO;
+import gr.aueb.cf.springtaskrest.model.User;
 import gr.aueb.cf.springtaskrest.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +18,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -52,6 +53,12 @@ public class UserRestController {
             LOGGER.error("Inserting user failed. {}", e.getMessage(), e);
             throw e;
         }
+    }
+
+    @DeleteMapping("/users")
+    public ResponseEntity<Void> deleteAllUsers() {
+        userService.deleteAllUsers();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/users/filtered")
@@ -109,10 +116,10 @@ public class UserRestController {
 
     @GetMapping("/users/me")
     public ResponseEntity<UserReadOnlyDTO> getMe(
-        Principal principal
+        @AuthenticationPrincipal User user
     ) throws AppObjectNotFoundException {
         try {
-            UserReadOnlyDTO readOnlyDTO = userService.findByUsername(principal.getName());
+            UserReadOnlyDTO readOnlyDTO = userService.findByUuid(user.getUuid());
             return new ResponseEntity<>(readOnlyDTO, HttpStatus.OK);
         } catch (AppObjectNotFoundException e) {
             LOGGER.error("Getting user failed. {}", e.getMessage(), e);
@@ -124,13 +131,13 @@ public class UserRestController {
     public ResponseEntity<UserReadOnlyDTO> updateMe(
             @Valid @RequestBody UserUpdateDTO dto,
             BindingResult bindingResult,
-            Principal principal
+            @AuthenticationPrincipal User user
     ) throws ValidationException, AppObjectNotFoundException, AppObjectAlreadyExistsException {
         if (bindingResult.hasErrors()) {
             throw new ValidationException(bindingResult);
         }
         try {
-           UserReadOnlyDTO updatedUser = userService.updateUserByUsername(principal.getName(), dto);
+           UserReadOnlyDTO updatedUser = userService.updateUser(user.getUuid(), dto);
            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
         } catch (AppObjectNotFoundException | AppObjectAlreadyExistsException e) {
             LOGGER.error("Updating user failed. {}", e.getMessage(), e);
@@ -140,10 +147,10 @@ public class UserRestController {
 
     @DeleteMapping("/users/me")
     public ResponseEntity<Void> deleteMe(
-            Principal principal
-    ) throws AppObjectNotFoundException {
+            @AuthenticationPrincipal User user
+            ) throws AppObjectNotFoundException {
         try {
-            userService.reverseUserStatusActivityByUsername(principal.getName());
+            userService.reverseUserStatusActivity(user.getUuid());
             return ResponseEntity.noContent().build();
         } catch (AppObjectNotFoundException e) {
             LOGGER.error("Deleting user failed. {}", e.getMessage(), e);
