@@ -24,7 +24,7 @@ public class UserSpecification {
     public static Specification<User> usersStatusIs(Boolean status) {
         return ((root, query, builder) -> {
             if (status == null) return builder.conjunction();
-            return builder.equal(root.get("status"), status);
+            return builder.equal(root.get("isActive"), status);
         });
     }
 
