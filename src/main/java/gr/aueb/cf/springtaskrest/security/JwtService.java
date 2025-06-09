@@ -42,7 +42,7 @@ public class JwtService {
         return extractAllClaims(token).get(claim, String.class);
     }
 
-    private String extractSubject(String token) {
+    public String extractSubject(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
