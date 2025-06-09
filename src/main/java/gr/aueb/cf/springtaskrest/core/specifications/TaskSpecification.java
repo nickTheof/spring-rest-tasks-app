@@ -49,7 +49,7 @@ public class TaskSpecification {
     public static Specification<Task> taskStatusIn(List<TaskStatus> statusList) {
         return (root, query, builder) -> {
             if (statusList == null || statusList.isEmpty()) return builder.conjunction();
-            return root.get("role").in(statusList);
+            return root.get("status").in(statusList);
         };
     }
 
