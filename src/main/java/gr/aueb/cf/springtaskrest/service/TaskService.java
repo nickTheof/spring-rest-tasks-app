@@ -45,7 +45,7 @@ public class TaskService implements ITaskService {
     @Override
     public TaskReadOnlyDTO findTaskByUserUuidAndTaskUuid(String uuid, String taskUuid) throws AppObjectNotFoundException {
         User user = userRepository.findByUuid(uuid).orElseThrow(() -> new AppObjectNotFoundException("User", "User " + uuid + " not found"));
-        Task task = taskRepository.findByUuidAndUser(uuid, user).orElseThrow(() -> new AppObjectNotFoundException("Task", "Task with uuid " + uuid + " not found"));
+        Task task = taskRepository.findByUuidAndUser(taskUuid, user).orElseThrow(() -> new AppObjectNotFoundException("Task", "Task with uuid " + taskUuid + " not found"));
         return mapper.mapToTaskReadOnly(task);
     }
 
@@ -128,7 +128,7 @@ public class TaskService implements ITaskService {
         }
 
         if (filters.getUserUuid() != null) {
-            spec = spec.and(TaskSpecification.tasksFieldLike("userUuid", filters.getUserUuid()));
+            spec = spec.and(TaskSpecification.tasksUserUuid(filters.getUserUuid()));
         }
 
         if (filters.getUserIsActive() != null) {
