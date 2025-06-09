@@ -32,10 +32,18 @@ public class Mapper {
     }
 
     public User mapToUser(UserUpdateDTO dto, User user) {
-        user.setUsername(dto.username());
-        user.setPassword(passwordEncoder.encode(dto.password()));
-        user.setRole(Role.valueOf(dto.role()));
-        user.setIsActive(dto.isActive());
+        if (dto.username() != null) {
+            user.setUsername(dto.username());
+        }
+        if (dto.password() != null) {
+            user.setPassword(passwordEncoder.encode(dto.password()));
+        }
+        if (dto.role() != null) {
+            user.setRole(Role.valueOf(dto.role()));
+        }
+        if (dto.isActive() != null) {
+            user.setIsActive(dto.isActive());
+        }
         return user;
     }
 
