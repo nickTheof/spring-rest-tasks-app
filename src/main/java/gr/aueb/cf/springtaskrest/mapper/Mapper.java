@@ -1,5 +1,6 @@
 package gr.aueb.cf.springtaskrest.mapper;
 
+import gr.aueb.cf.springtaskrest.core.enums.Role;
 import gr.aueb.cf.springtaskrest.dto.*;
 import gr.aueb.cf.springtaskrest.model.Task;
 import gr.aueb.cf.springtaskrest.model.User;
@@ -16,15 +17,24 @@ public class Mapper {
         User user = new User();
         user.setUsername(dto.username());
         user.setPassword(passwordEncoder.encode(dto.password()));
-        user.setRole(dto.role());
+        user.setRole(Role.valueOf(dto.role()));
         user.setIsActive(dto.isActive());
+        return user;
+    }
+
+    public User mapToUser(UserRegisterDTO dto) {
+        User user = new User();
+        user.setUsername(dto.username());
+        user.setPassword(passwordEncoder.encode(dto.password()));
+        user.setRole(Role.USER);
+        user.setIsActive(true);
         return user;
     }
 
     public User mapToUser(UserUpdateDTO dto, User user) {
         user.setUsername(dto.username());
         user.setPassword(passwordEncoder.encode(dto.password()));
-        user.setRole(dto.role());
+        user.setRole(Role.valueOf(dto.role()));
         user.setIsActive(dto.isActive());
         return user;
     }
