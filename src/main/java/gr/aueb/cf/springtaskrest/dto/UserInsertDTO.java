@@ -11,14 +11,14 @@ public record UserInsertDTO(
         @Pattern(regexp = "^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[@#$%!^&*]).{8,}$", message = "Invalid Password")
         String password,
 
-        @NotNull(message = "isActive field is required")
+        @NotNull(message = "isActive is required field")
         Boolean isActive,
 
-        @NotNull(message = "Role is required field")
+        @NotBlank(message = "Role is required Field")
         @Pattern(regexp = "^(ADMIN|USER)$", message = "Role can be ADMIN or USER")
-        Role role
+        String role
 ) {
     public UserInsertDTO(String username, String password) {
-        this(username, password, true, Role.USER);
+        this(username, password, true, Role.USER.name());
     }
 }

@@ -19,6 +19,6 @@ public record UserUpdateDTO(
 
         @NotNull(message = "Role is required field")
         @Pattern(regexp = "^(ADMIN|USER)$", message = "Role can be ADMIN or USER")
-        Role role
+        String role
 ) {
 }
