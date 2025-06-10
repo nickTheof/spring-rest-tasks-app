@@ -32,4 +32,14 @@ public class AuthenticationService {
         return new AuthenticationResponseDTO(token);
     }
 
+    public boolean isPasswordValid(String username, String password) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password));
+            return authentication.isAuthenticated();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }

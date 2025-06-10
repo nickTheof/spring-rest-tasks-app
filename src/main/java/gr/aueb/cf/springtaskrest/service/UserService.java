@@ -1,7 +1,9 @@
 package gr.aueb.cf.springtaskrest.service;
 
+import gr.aueb.cf.springtaskrest.authentication.AuthenticationService;
 import gr.aueb.cf.springtaskrest.core.enums.Role;
 import gr.aueb.cf.springtaskrest.core.exceptions.AppObjectAlreadyExistsException;
+import gr.aueb.cf.springtaskrest.core.exceptions.AppObjectNotAuthorizedException;
 import gr.aueb.cf.springtaskrest.core.exceptions.AppObjectNotFoundException;
 import gr.aueb.cf.springtaskrest.core.filters.UserFilters;
 import gr.aueb.cf.springtaskrest.core.specifications.UserSpecification;
@@ -13,6 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +30,7 @@ import java.util.stream.Collectors;
 public class UserService implements IUserService {
     private final UserRepository userRepository;
     private final Mapper mapper;
+    private final AuthenticationService authenticationService;
 
     @Override
     public UserReadOnlyDTO findByUsername(String username) throws AppObjectNotFoundException {
@@ -107,6 +113,19 @@ public class UserService implements IUserService {
     @Override
     public void deleteAllUsers() {
         userRepository.deleteAll();
+    }
+
+    @Transactional(rollbackFor = {AppObjectNotFoundException.class, AppObjectNotAuthorizedException.class})
+    @Override
+    public void changeUserPassword(String username, ChangePasswordDTO dto) throws AppObjectNotFoundException, AppObjectNotAuthorizedException {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppObjectNotFoundException("User", "User " + username + " not found"));
+        boolean isOldPasswordValid = authenticationService.isPasswordValid(username, dto.oldPassword());
+        if (!isOldPasswordValid) {
+            throw new AppObjectNotAuthorizedException("User", "User " + username + " not authorized");
+        }
+        UserUpdateDTO updateDTO = new UserUpdateDTO(dto.newPassword());
+        User updatedUser = mapper.mapToUser(updateDTO, user);
+        userRepository.save(updatedUser);
     }
 
     private Specification<User> getSpecsFromFilters(UserFilters filters) {

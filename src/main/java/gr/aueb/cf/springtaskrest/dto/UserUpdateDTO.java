@@ -14,4 +14,7 @@ public record UserUpdateDTO(
         @Pattern(regexp = "^(ADMIN|USER)$", message = "Role can be ADMIN or USER")
         String role
 ) {
+        public UserUpdateDTO( String password) {
+                this(null, password, null, null);
+        }
 }

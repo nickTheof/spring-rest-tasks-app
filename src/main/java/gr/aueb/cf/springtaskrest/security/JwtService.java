@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.function.Function;
@@ -33,9 +34,10 @@ public class JwtService {
                 .compact();
     }
 
-    public Boolean isTokenValid(String token, UserDetails userDetails) {
+    public Boolean isTokenValid(String token, UserDetails userDetails, Instant lastPasswordChange) {
         final String subject = extractSubject(token);
-        return subject.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        final Date issuedAt = extractIssuedAt(token);
+        return subject.equals(userDetails.getUsername()) && !isTokenExpired(token) && issuedAt.toInstant().isAfter(lastPasswordChange);
     }
 
     public String getStringClaim(String token, String claim) {
@@ -49,6 +51,10 @@ public class JwtService {
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
+    }
+
+    public Date extractIssuedAt(String token) {
+        return extractClaim(token, Claims::getIssuedAt);
     }
 
     private boolean isTokenExpired(String token) {

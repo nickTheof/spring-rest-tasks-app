@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.stream.Collectors;
 
 @Component
@@ -43,6 +44,7 @@ public class Mapper {
         }
         if (dto.password() != null) {
             user.setPassword(passwordEncoder.encode(dto.password()));
+            user.setLastPasswordChange(Instant.now());
         }
         if (dto.role() != null) {
             user.setRole(Role.valueOf(dto.role()));

@@ -1,9 +1,9 @@
 package gr.aueb.cf.springtaskrest.rest;
 
 import gr.aueb.cf.springtaskrest.core.exceptions.AppObjectAlreadyExistsException;
+import gr.aueb.cf.springtaskrest.core.exceptions.AppObjectNotAuthorizedException;
 import gr.aueb.cf.springtaskrest.core.exceptions.AppObjectNotFoundException;
 import gr.aueb.cf.springtaskrest.core.exceptions.ValidationException;
-import gr.aueb.cf.springtaskrest.core.filters.TaskFilters;
 import gr.aueb.cf.springtaskrest.dto.*;
 import gr.aueb.cf.springtaskrest.model.User;
 import gr.aueb.cf.springtaskrest.service.TaskService;
@@ -22,6 +22,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/v1/users/me")
@@ -112,6 +114,34 @@ public class CurrentUserRestController {
             return ResponseEntity.noContent().build();
         } catch (AppObjectNotFoundException e) {
             LOGGER.error("Deleting user failed. {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @Operation(
+            summary = "Change password of current authenticated user",
+            description = "An authenticated user changes his password by inserting old and new credentials",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "204"
+                    )
+            }
+    )
+    @Tag(name = "User")
+    @PostMapping("/change-password")
+    public ResponseEntity<Void> changePassword(
+            @Valid @RequestBody ChangePasswordDTO dto,
+            BindingResult bindingResult,
+            Principal principal
+    ) throws ValidationException, AppObjectNotFoundException, AppObjectNotAuthorizedException {
+        if (bindingResult.hasErrors()) {
+            throw new ValidationException(bindingResult);
+        }
+        try {
+            userService.changeUserPassword(principal.getName(), dto);
+            return ResponseEntity.noContent().build();
+        } catch (AppObjectNotFoundException | AppObjectNotAuthorizedException e) {
+            LOGGER.error("Changing password failed. {}", e.getMessage(), e);
             throw e;
         }
     }

@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.Instant;
 import java.util.*;
 
 @Entity
@@ -30,6 +31,9 @@ public class User extends AbstractEntity implements UserDetails {
 
     @Column(nullable = false)
     private String password;
+
+    @Column(name = "last_password_change", nullable = false)
+    private Instant lastPasswordChange;
 
     @ColumnDefault("true")
     @Column(nullable = false, name = "is_active")
@@ -68,8 +72,9 @@ public class User extends AbstractEntity implements UserDetails {
     }
 
     @PrePersist
-    protected void initializeUuid() {
+    protected void onPersist() {
         if (uuid == null) uuid = UUID.randomUUID().toString();
+        if (lastPasswordChange == null) lastPasswordChange = Instant.now();
     }
 
     public Set<Task> getAllTasks() {
