@@ -4,10 +4,7 @@ import gr.aueb.cf.springtaskrest.core.exceptions.AppObjectAlreadyExistsException
 import gr.aueb.cf.springtaskrest.core.exceptions.AppObjectNotFoundException;
 import gr.aueb.cf.springtaskrest.core.filters.TaskFilters;
 import gr.aueb.cf.springtaskrest.core.specifications.TaskSpecification;
-import gr.aueb.cf.springtaskrest.dto.Paginated;
-import gr.aueb.cf.springtaskrest.dto.TaskInsertDTO;
-import gr.aueb.cf.springtaskrest.dto.TaskReadOnlyDTO;
-import gr.aueb.cf.springtaskrest.dto.TaskUpdateDTO;
+import gr.aueb.cf.springtaskrest.dto.*;
 import gr.aueb.cf.springtaskrest.mapper.Mapper;
 import gr.aueb.cf.springtaskrest.model.Task;
 import gr.aueb.cf.springtaskrest.model.User;
@@ -50,13 +47,15 @@ public class TaskService implements ITaskService {
     }
 
     @Override
-    public Paginated<TaskReadOnlyDTO> getFilteredPaginatedTasks(TaskFilters filters) {
-        return new Paginated<>(taskRepository.findAll(getSpecsFromFilters(filters), filters.getPageable()).map(mapper::mapToTaskReadOnly));
+    public Paginated<TaskReadOnlyDTO> getFilteredPaginatedTasks(TaskFiltersDTO filters) {
+        TaskFilters taskFilters = mapper.mapToTaskFilters(filters);
+        return new Paginated<>(taskRepository.findAll(getSpecsFromFilters(taskFilters), taskFilters.getPageable()).map(mapper::mapToTaskReadOnly));
     }
 
     @Override
-    public List<TaskReadOnlyDTO> getFilteredTasks(TaskFilters filters) {
-        return taskRepository.findAll(getSpecsFromFilters(filters)).stream().map(mapper::mapToTaskReadOnly).collect(Collectors.toList());
+    public List<TaskReadOnlyDTO> getFilteredTasks(TaskFiltersDTO filters) {
+        TaskFilters taskFilters = mapper.mapToTaskFilters(filters);
+        return taskRepository.findAll(getSpecsFromFilters(taskFilters)).stream().map(mapper::mapToTaskReadOnly).collect(Collectors.toList());
     }
 
     @Transactional(rollbackFor = {AppObjectNotFoundException.class})

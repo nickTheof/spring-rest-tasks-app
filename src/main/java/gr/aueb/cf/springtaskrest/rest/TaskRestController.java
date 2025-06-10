@@ -3,12 +3,9 @@ package gr.aueb.cf.springtaskrest.rest;
 import gr.aueb.cf.springtaskrest.core.exceptions.AppObjectAlreadyExistsException;
 import gr.aueb.cf.springtaskrest.core.exceptions.AppObjectNotFoundException;
 import gr.aueb.cf.springtaskrest.core.exceptions.ValidationException;
-import gr.aueb.cf.springtaskrest.core.filters.TaskFilters;
 import gr.aueb.cf.springtaskrest.dto.*;
 import gr.aueb.cf.springtaskrest.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
@@ -46,9 +43,7 @@ public class TaskRestController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        TaskFilters filters = TaskFilters.builder().build();
-        filters.setPage(page);
-        filters.setSize(size);
+        TaskFiltersDTO filters = new TaskFiltersDTO(page, size);
         var tasks = taskService.getFilteredPaginatedTasks(filters);
         return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
@@ -75,9 +70,9 @@ public class TaskRestController {
     )
     @PostMapping("/tasks/filtered")
     public ResponseEntity<Paginated<TaskReadOnlyDTO>> getFilteredTasksPaginated(
-            @Nullable @RequestBody TaskFilters filters
+            @Nullable @RequestBody TaskFiltersDTO filters
             ) {
-        if (filters == null) filters = TaskFilters.builder().build();
+        if (filters == null) filters = new TaskFiltersDTO();
         var tasks = taskService.getFilteredPaginatedTasks(filters);
         return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
@@ -137,9 +132,7 @@ public class TaskRestController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        TaskFilters filters = TaskFilters.builder().userUuid(userUuid).build();
-        filters.setPage(page);
-        filters.setSize(size);
+        TaskFiltersDTO filters = new TaskFiltersDTO(page, size, userUuid);
         return new ResponseEntity<>(taskService.getFilteredPaginatedTasks(filters), HttpStatus.OK);
     }
 

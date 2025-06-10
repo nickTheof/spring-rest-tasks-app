@@ -12,9 +12,9 @@ import java.util.List;
 public interface IUserService {
     UserReadOnlyDTO findByUsername(String username) throws AppObjectNotFoundException;
     UserReadOnlyDTO findByUuid(String uuid) throws AppObjectNotFoundException;
-    Paginated<UserReadOnlyDTO> getUsersFilteredPaginated(UserFilters filters);
+    Paginated<UserReadOnlyDTO> getUsersFilteredPaginated(UserFiltersDTO filters);
     Page<UserReadOnlyDTO> getUsersPaginated(int page, int pageSize);
-    List<UserReadOnlyDTO> getUsersFiltered(UserFilters filters);
+    List<UserReadOnlyDTO> getUsersFiltered(UserFiltersDTO filters);
     UserReadOnlyDTO saveUser(UserInsertDTO dto) throws AppObjectAlreadyExistsException;
     UserReadOnlyDTO registerUser(UserRegisterDTO dto) throws AppObjectAlreadyExistsException;
     UserReadOnlyDTO updateUser(String uuid, UserUpdateDTO dto) throws AppObjectNotFoundException, AppObjectAlreadyExistsException;

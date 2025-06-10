@@ -39,8 +39,9 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Paginated<UserReadOnlyDTO> getUsersFilteredPaginated(UserFilters filters) {
-        var filtered = userRepository.findAll(getSpecsFromFilters(filters), filters.getPageable());
+    public Paginated<UserReadOnlyDTO> getUsersFilteredPaginated(UserFiltersDTO filters) {
+        UserFilters userFilters = mapper.mapToUserFilters(filters);
+        var filtered = userRepository.findAll(getSpecsFromFilters(userFilters), userFilters.getPageable());
         return new Paginated<>(filtered.map(mapper::mapToUserReadOnly));
     }
 
@@ -50,8 +51,9 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<UserReadOnlyDTO> getUsersFiltered(UserFilters filters) {
-        return userRepository.findAll(getSpecsFromFilters(filters)).stream().map(mapper::mapToUserReadOnly).collect(Collectors.toList());
+    public List<UserReadOnlyDTO> getUsersFiltered(UserFiltersDTO filters) {
+        UserFilters userFilters = mapper.mapToUserFilters(filters);
+        return userRepository.findAll(getSpecsFromFilters(userFilters)).stream().map(mapper::mapToUserReadOnly).collect(Collectors.toList());
     }
 
     @Transactional(rollbackFor = {AppObjectAlreadyExistsException.class})

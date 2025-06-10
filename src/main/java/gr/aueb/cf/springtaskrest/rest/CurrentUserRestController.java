@@ -133,10 +133,8 @@ public class CurrentUserRestController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        TaskFilters filters = TaskFilters.builder().userUuid(user.getUuid()).build();
+        TaskFiltersDTO filters = new TaskFiltersDTO(page, size, user.getUuid());
         LOGGER.error("Getting current user tasks. {}", filters);
-        filters.setPage(page);
-        filters.setSize(size);
         return new ResponseEntity<>(taskService.getFilteredPaginatedTasks(filters), HttpStatus.OK);
     }
 

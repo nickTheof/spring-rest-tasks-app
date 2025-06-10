@@ -2,12 +2,17 @@ package gr.aueb.cf.springtaskrest.mapper;
 
 import gr.aueb.cf.springtaskrest.core.enums.Role;
 import gr.aueb.cf.springtaskrest.core.enums.TaskStatus;
+import gr.aueb.cf.springtaskrest.core.filters.TaskFilters;
+import gr.aueb.cf.springtaskrest.core.filters.UserFilters;
 import gr.aueb.cf.springtaskrest.dto.*;
 import gr.aueb.cf.springtaskrest.model.Task;
 import gr.aueb.cf.springtaskrest.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -76,5 +81,70 @@ public class Mapper {
     public TaskReadOnlyDTO mapToTaskReadOnly(Task task) {
         UserReadOnlyDTO userReadOnlyDTO = mapToUserReadOnly(task.getUser());
         return new TaskReadOnlyDTO(task.getId(), task.getUuid(), task.getTitle(), task.getDescription(), task.getStatus().name(), userReadOnlyDTO);
+    }
+
+    public UserFilters mapToUserFilters(UserFiltersDTO dto) {
+        UserFilters userFilters = new UserFilters();
+        if (dto.page() != null) {
+            userFilters.setPage(dto.page());
+        }
+        if (dto.size() != null) {
+            userFilters.setSize(dto.size());
+        }
+        if (dto.sortBy() != null) {
+            userFilters.setSortBy(dto.sortBy());
+        }
+        if (dto.orderBy() != null) {
+            userFilters.setOrderBy(Sort.Direction.valueOf(dto.orderBy()));
+        }
+        if (dto.username() != null) {
+            userFilters.setUsername(dto.username());
+        }
+        if (dto.role() != null) {
+            userFilters.setRole(Role.valueOf(dto.role()));
+        }
+        if (dto.active() != null) {
+            userFilters.setActive(dto.active());
+        }
+        if (dto.uuid() != null) {
+            userFilters.setUuid(dto.uuid());
+        }
+        return userFilters;
+    }
+
+    public TaskFilters mapToTaskFilters(TaskFiltersDTO dto) {
+        TaskFilters taskFilters = new TaskFilters();
+        if (dto.page() != null) {
+            taskFilters.setPage(dto.page());
+        }
+        if (dto.size() != null) {
+            taskFilters.setSize(dto.size());
+        }
+        if (dto.sortBy() != null) {
+            taskFilters.setSortBy(dto.sortBy());
+        }
+        if (dto.orderBy() != null) {
+            taskFilters.setOrderBy(Sort.Direction.valueOf(dto.orderBy()));
+        }
+        if (dto.uuid() != null) {
+            taskFilters.setUuid(dto.uuid());
+        }
+        if (dto.taskStatus() != null) {
+            taskFilters.setStatus(dto.taskStatus().stream().map(TaskStatus::valueOf).collect(Collectors.toList()));
+        }
+
+        if (dto.title() != null) {
+            taskFilters.setTitle(dto.title());
+        }
+        if (dto.userIsActive() != null) {
+            taskFilters.setUserIsActive(dto.userIsActive());
+        }
+        if (dto.uuid() != null) {
+            taskFilters.setUuid(dto.uuid());
+        }
+        if (dto.userUuid() != null) {
+            taskFilters.setUserUuid(dto.userUuid());
+        }
+        return taskFilters;
     }
 }

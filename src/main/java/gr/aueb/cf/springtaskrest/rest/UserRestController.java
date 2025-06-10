@@ -3,11 +3,7 @@ package gr.aueb.cf.springtaskrest.rest;
 import gr.aueb.cf.springtaskrest.core.exceptions.AppObjectAlreadyExistsException;
 import gr.aueb.cf.springtaskrest.core.exceptions.AppObjectNotFoundException;
 import gr.aueb.cf.springtaskrest.core.exceptions.ValidationException;
-import gr.aueb.cf.springtaskrest.core.filters.UserFilters;
-import gr.aueb.cf.springtaskrest.dto.Paginated;
-import gr.aueb.cf.springtaskrest.dto.UserInsertDTO;
-import gr.aueb.cf.springtaskrest.dto.UserReadOnlyDTO;
-import gr.aueb.cf.springtaskrest.dto.UserUpdateDTO;
+import gr.aueb.cf.springtaskrest.dto.*;
 import gr.aueb.cf.springtaskrest.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -112,9 +108,8 @@ public class UserRestController {
             summary = "Get filtered users (paginated)",
             description = "Returns a paginated list of users matching provided filters. Only accessible by admin.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    required = false,
                     content = @Content(
-                            schema = @Schema(implementation = UserFilters.class)
+                            schema = @Schema(implementation = UserFiltersDTO.class)
                     )
             ),
             responses = {
@@ -126,9 +121,9 @@ public class UserRestController {
     )
     @PostMapping("/filtered")
     public ResponseEntity<Paginated<UserReadOnlyDTO>> getFilteredUsersPaginated(
-            @Nullable @RequestBody UserFilters filters
+            @Nullable @RequestBody UserFiltersDTO filters
             ) {
-        if (filters == null) filters = UserFilters.builder().build();
+        if (filters == null) filters = new UserFiltersDTO();
         return new ResponseEntity<>(userService.getUsersFilteredPaginated(filters), HttpStatus.OK);
     }
 
