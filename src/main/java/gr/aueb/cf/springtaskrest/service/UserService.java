@@ -128,6 +128,15 @@ public class UserService implements IUserService {
         userRepository.save(updatedUser);
     }
 
+    @Transactional
+    @Override
+    public void updateUserPasswordAfterReset(User user, String newPassword) {
+        UserUpdateDTO updateDTO = new UserUpdateDTO(newPassword);
+        User updatedUser = mapper.mapToUser(updateDTO, user);
+        updatedUser.clearPasswordResetToken();
+        userRepository.save(updatedUser);
+    }
+
     private Specification<User> getSpecsFromFilters(UserFilters filters) {
         Specification<User> spec = (root, query, builder) -> null;
         if (filters.getUuid() != null) {

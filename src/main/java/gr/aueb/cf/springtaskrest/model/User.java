@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Entity
@@ -42,6 +43,9 @@ public class User extends AbstractEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private PasswordResetToken passwordResetToken;
+
     @Getter(AccessLevel.PROTECTED)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Task> tasks = new HashSet<>();
@@ -63,7 +67,7 @@ public class User extends AbstractEntity implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return lastPasswordChange.isAfter(Instant.now().minus(90, ChronoUnit.DAYS));
     }
 
     @Override
@@ -94,4 +98,21 @@ public class User extends AbstractEntity implements UserDetails {
         task.setUser(null);
     }
 
+    // Password reset methods
+    public void createPasswordResetToken() {
+        PasswordResetToken resetToken = new PasswordResetToken();
+        resetToken.setUser(this);
+        this.passwordResetToken = resetToken;
+    }
+
+    public void clearPasswordResetToken() {
+        if (this.passwordResetToken != null) {
+            this.passwordResetToken.setUser(null);
+            this.passwordResetToken = null;
+        }
+    }
+
+    public boolean hasValidPasswordResetToken() {
+        return this.passwordResetToken != null && this.passwordResetToken.isTokenValid();
+    }
 }
