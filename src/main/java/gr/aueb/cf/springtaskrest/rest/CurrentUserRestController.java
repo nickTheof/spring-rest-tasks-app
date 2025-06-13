@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -166,6 +167,21 @@ public class CurrentUserRestController {
         TaskFiltersDTO filters = new TaskFiltersDTO(page, size, user.getUuid());
         LOGGER.error("Getting current user tasks. {}", filters);
         return new ResponseEntity<>(taskService.getFilteredPaginatedTasks(filters), HttpStatus.OK);
+    }
+
+    @Tag(name = "Tasks")
+    @PostMapping("/tasks/filtered")
+    public ResponseEntity<Paginated<TaskReadOnlyDTO>> getCurrentUserTasksFiltered(
+            @AuthenticationPrincipal User user,
+            @Nullable @RequestBody TaskFiltersDTO filters
+    ) {
+        TaskFiltersDTO filteredTasks;
+        if (filters == null) {
+            filteredTasks = new TaskFiltersDTO(user.getUuid());
+        } else {
+            filteredTasks = new TaskFiltersDTO(filters, user.getUuid());
+        }
+        return new ResponseEntity<>(taskService.getFilteredPaginatedTasks(filteredTasks), HttpStatus.OK);
     }
 
 
