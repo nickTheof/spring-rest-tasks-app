@@ -17,7 +17,7 @@ public class EmailService {
         message.setTo(to);
         message.setSubject("Password Reset Request");
         message.setText("To reset your password, use the below token:\n\n"
-                 + token
+                + "http://localhost:4200/auth/reset-password?token="  + token
                 + "\n\nThis token will expire in 30 minutes.");
 
         try {
