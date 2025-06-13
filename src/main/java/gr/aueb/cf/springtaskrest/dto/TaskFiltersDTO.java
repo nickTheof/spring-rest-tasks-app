@@ -25,4 +25,12 @@ public record TaskFiltersDTO(
     public TaskFiltersDTO(Integer page, Integer size, String userUuid) {
         this(page, size, null, null, null, null,null,null, userUuid);
     }
+
+    public TaskFiltersDTO(String userUuid) {
+        this(null, null, null, null, null, null,null,null, userUuid);
+    }
+
+    public TaskFiltersDTO(TaskFiltersDTO dto, String userUuid) {
+        this(dto.page, dto.size, dto.sortBy, dto.orderBy, dto.uuid, dto.title, dto.taskStatus, dto.userIsActive, userUuid);
+    }
 }
