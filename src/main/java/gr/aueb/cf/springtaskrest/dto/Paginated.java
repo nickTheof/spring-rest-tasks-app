@@ -13,7 +13,7 @@ public record Paginated<T> (
             int pageSize
         ){
     public Paginated(Page<T> page) {
-        this(page.getContent(), page.getTotalElements(), page.getTotalPages(), page.getNumber(), page.getSize(), page.getNumberOfElements());
+        this(page.getContent(), page.getTotalElements(), page.getTotalPages(), page.getNumber(), page.getPageable().getPageNumber(), page.getNumberOfElements());
     }
 }
 
