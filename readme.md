@@ -27,7 +27,7 @@ A secure RESTful API for **user and task management**, built using **Java Spring
 
 ### ✅ Prerequisites
 
-- Java 17+
+- Java 21
 - Gradle
 - MySQL
 
