@@ -128,7 +128,7 @@ public class CurrentUserRestController {
                     )
             }
     )
-    @Tag(name = "User")
+    @Tag(name = "Users")
     @PostMapping("/change-password")
     public ResponseEntity<Void> changePassword(
             @Valid @RequestBody ChangePasswordDTO dto,
